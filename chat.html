@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nahman AI</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap');
+
+    :root {
+      --primary: #4a90d9;
+      --dark:    #1a8f2f;
+      --gray:    #38383f;
+      --white:   #ffffff;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Arial, sans-serif;
+      color: var(--white);
+      display: flex;
+      flex-direction: row;
+      min-height: 100vh;
+      padding: 0;
+      background-image:
+        url("bg-accueil.png");
+      background-position: 50% 50%;
+      background-size: 150% auto;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+    }
+
+    header {
+      width: 100%;
+      max-width: 720px;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 1.2rem 2rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      box-shadow: 0 18px 45px rgba(0, 0, 0, 0.18);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    header .logo { font-size: 2.2rem; }
+
+    header h1 {
+      font-family: 'Dancing Script', cursive;
+      font-size: 3rem;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      background: linear-gradient(135deg, #ff005f 0%, #9400d3 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
+    }
+
+    header p {
+      font-size: 0.85rem;
+      opacity: 0.85;
+      margin-top: 0.2rem;
+    }
+
+    #zone-chat {
+      width: 100%;
+      max-width: 720px;
+      background: transparent;
+      border-radius: 12px;
+      padding: 1.5rem;
+      min-height: 350px;
+      max-height: 520px;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      scroll-behavior: smooth;
+      border: none;
+    }
+
+    .message {
+      max-width: 88%;
+      padding: 0.75rem 1rem;
+      border-radius: 12px;
+      line-height: 1.6;
+      font-size: 0.95rem;
+    }
+
+    .message.bot {
+      background: linear-gradient(135deg, #1f2231 0%, #3d425b 65%, #161721 100%);
+      border-left: 3px solid var(--primary);
+      align-self: flex-start;
+    }
+
+    .message.bot:first-of-type {
+      color: #ffffff;
+      background: rgba(0, 0, 0, 0.5) !important;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 1rem;
+    }
+
+    .message.user {
+      background: var(--primary);
+      align-self: flex-end;
+      text-align: right;
+    }
+
+    .message.loading {
+      background: var(--dark);
+      border-left: 3px solid var(--primary);
+      align-self: flex-start;
+      opacity: 0.6;
+      font-style: italic;
+    }
+
+    #suggestions {
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .btn-suggestion {
+      background: transparent;
+      border: 1px solid #555;
+      color: #bbb;
+      padding: 0.4rem 0.9rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-suggestion:hover {
+      border-color: var(--primary);
+      color: var(--white);
+      background: rgba(74, 144, 217, 0.12);
+    }
+
+    #formulaire {
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      gap: 0.75rem;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 0.5rem;
+      border-radius: 8px;
+      margin-top: 2rem;
+    }
+
+    #champ-texte {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      background: transparent;
+      color: var(--white);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    #champ-texte::placeholder { color: rgba(255, 255, 255, 0.5); }
+    #champ-texte:focus {
+      background: transparent;
+      border: none;
+    }
+
+    #bouton-envoyer {
+      padding: 0.75rem 1.5rem;
+      background: linear-gradient(135deg, #ff0000 0%, #9400d3 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    #bouton-envoyer:hover { opacity: 0.85; }
+    #bouton-envoyer:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    #barre-parametres {
+      width: 100%;
+      max-width: 720px;
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      justify-content: center;
+    }
+
+    .btn-param {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #bbb;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-param:hover {
+      border-color: var(--primary);
+      color: var(--white);
+      background: rgba(74, 144, 217, 0.12);
+    }
+
+    #helicoptere {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 3rem;
+      animation: volerVersLehaut 2s ease-in-out forwards;
+      z-index: 1000;
+    }
+
+    @keyframes volerVersLehaut {
+      0% { bottom: 100px; opacity: 1; }
+      100% { bottom: 100vh; opacity: 0; }
+    }
+
+    #sidebar {
+      width: 200px;
+      background: rgba(0, 0, 0, 0.8);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      border-right: 1px solid rgba(255, 255, 255, 0.1);
+      overflow-y: auto;
+    }
+
+#sidebar-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      background: linear-gradient(135deg, #ff005f 0%, #9400d3 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .sidebar-section {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .sidebar-section-title {
+      font-size: 0.85rem;
+      opacity: 0.6;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-top: 1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .btn-sidebar {
+      background: rgba(74, 144, 217, 0.15);
+      border: 1px solid rgba(74, 144, 217, 0.3);
+      color: #bbb;
+      padding: 0.6rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+    }
+
+    .btn-sidebar:hover {
+      background: rgba(74, 144, 217, 0.3);
+      color: var(--white);
+      border-color: var(--primary);
+    }
+
+    #main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.5rem;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================================
+       SIDEBAR
+       Barre latérale avec options et boutons rapides
+       ============================================================ -->
+  <aside id="sidebar">
+    <div id="sidebar-title">⚙️ Menu</div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Langue</div>
+      <button class="btn-sidebar" onclick="changerLangue('fr')">🇫🇷 Français</button>
+      <button class="btn-sidebar" onclick="changerLangue('en')">🇬🇧 Anglais</button>
+      <button class="btn-sidebar" onclick="changerLangue('he')">🇮🇱 Hébreu</button>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Infos</div>
+      <button class="btn-sidebar" onclick="afficherActualites()">📰 Actualités</button>
+      <button class="btn-sidebar" onclick="afficherMeteo()">🌤️ Météo</button>
+      <button class="btn-sidebar" onclick="afficherInfos()">ℹ️ À propos</button>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-title">Actions</div>
+      <button class="btn-sidebar" onclick="reinitialiserChat()">🔄 Nouveau chat</button>
+      <button class="btn-sidebar" onclick="changerTheme()">🌙 Thème</button>
+    </div>
+  </aside>
+
+  <div id="main-content">
+
+  <!-- ============================================================
+       EN-TETE
+       Change l'emoji, le titre et la description pour
+       personnaliser ton chatbot.
+       ============================================================ -->
+  <header>
+    <img src="bg-accueil3.png" class="logo" alt="Logo" style="max-width: 80px; height: auto; border-radius: 8px;">
+    <div>
+      <h1>Nahman AI</h1>
+      <p></p>
+    </div>
+  </header>
+
+  <div id="zone-chat"></div>
+
+  <!-- ============================================================
+       SUGGESTIONS
+       Ajoute ou modifie des boutons de suggestion.
+       Chaque bouton appelle poserQuestion() avec un texte.
+       ============================================================ -->
+  <div id="suggestions">
+    <button class="btn-suggestion" onclick="afficherActualites()">📰 Actualités</button>
+    <button class="btn-suggestion" onclick="afficherMeteo()">🌤️ Météo</button>
+  </div>
+
+  <div id="formulaire">
+    <input
+      id="champ-texte"
+      type="text"
+      placeholder="Écris ton message ici..."
+    />
+    <button id="bouton-envoyer" onclick="envoyerMessage()">Envoyer</button>
+  </div>
+
+
+
+  <script>
+    // ============================================================
+    // 🎨 PERSONNALISATION - MODIFIE CES VARIABLES !
+    // ============================================================
+    const titre = "Nahman AI";
+    const description = "";
+    const messageAccueil = `Bienvenue sur Nahman AI`;
+
+    // ============================================================
+    // GESTION DES LANGUES
+    // ============================================================
+    let langueCourante = 'fr';
+
+    const traductions = {
+      fr: {
+        titre: "Chatbot",
+        description: "Ton assistant intelligent",
+        messageAccueil: "Bonjour ! 👋 Je suis ton chatbot. Comment puis-je t'aider ?"
+      },
+      en: {
+        titre: "Chatbot",
+        description: "Your intelligent assistant",
+        messageAccueil: "Hello! 👋 I'm your chatbot. How can I help you?"
+      },
+      he: {
+        titre: "צ'טבוט",
+        description: "העוזר החכם שלך",
+        messageAccueil: "שלום! 👋 אני הצ'טבוט שלך. איך אני יכול לעזור לך?"
+      }
+    };
+
+    const prompts = {
+      fr: "Tu es un chatbot intelligent et utile. Tu peux aider avec n'importe quel sujet. Réponds toujours en FRANÇAIS de manière claire et concise. Sois utile, honnête et joyeux. Ajoute des émojis pertinents. Sois concis (1-2 phrases max).",
+      en: "You are an intelligent and helpful chatbot. You can assist with any topic. Always respond in ENGLISH in a clear and concise way. Be helpful, honest and cheerful. Add relevant emojis. Be concise (1-2 sentences max).",
+      he: "אתה chatbot חכם ועוזר. אתה יכול לעזור בכל נושא. תמיד תשיב בעברית בדרך ברורה ותמציתית. היה עוזר, כנ וחיובי. הוסף emojis רלוונטיים. היה תמציתי (משפט אחד עד שניים בלבד)."
+    };
+
+    function changerLangue(langue) {
+      langueCourante = langue;
+
+      // Met à jour le titre et la description
+      document.querySelector('header h1').textContent = traductions[langue].titre;
+      document.querySelector('header p').textContent = traductions[langue].description;
+
+      const flags = { fr: '🇫🇷', en: '🇬🇧', he: '🇮🇱' };
+      ajouterMessage('bot', `Langue changée en ${flags[langue]} !`);
+    }
+
+    function afficherActualites() {
+      const actualites = `📰 <strong>Infos Utiles</strong><br><br>
+💡 Je peux t'aider sur n'importe quel sujet<br>
+🔧 Pose-moi des questions techniques<br>
+📚 Demande des conseils ou des explications<br>
+🌟 Je suis là pour t'assister !`;
+      ajouterMessage('bot', actualites);
+    }
+
+    function afficherMeteo() {
+      const meteo = `🌤️ <strong>Météo</strong><br><br>
+☀️ Ensoleillé<br>
+🌡️ 22°C<br>
+💨 Vent léger<br>
+💧 Humidité 60%`;
+      ajouterMessage('bot', meteo);
+    }
+
+    function reinitialiserChat() {
+      chat.innerHTML = '';
+      ajouterMessage('bot', messageAccueil);
+    }
+
+    function afficherInfos() {
+      const infos = `ℹ️ <strong>À propos</strong><br><br>
+Version: 1.0<br>
+Créé avec FastAPI + Claude<br>
+🚀 Chatbot intelligent`;
+      ajouterMessage('bot', infos);
+    }
+
+    function changerTheme() {
+      document.body.classList.toggle('theme-clair');
+      ajouterMessage('bot', '🌙 Thème changé !');
+    }
+
+// Code du chatbot
+    const chat  = document.getElementById('zone-chat');
+    const input = document.getElementById('champ-texte');
+    const btn   = document.getElementById('bouton-envoyer');
+    let idMsg = 0;
+
+    // Applique la personnalisation
+    document.querySelector('header h1').textContent = titre;
+    document.querySelector('header p').textContent = description;
+
+    // --- Message de bienvenue ---
+    ajouterMessage('bot', messageAccueil);
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') envoyerMessage();
+    });
+
+    function envoyerMessage() {
+      const texte = input.value.trim();
+      if (!texte) return;
+      input.value = '';
+
+      // Affiche l'avion
+      const avion = document.createElement('div');
+      avion.id = 'helicoptere';
+      avion.textContent = '✈️';
+      document.body.appendChild(avion);
+
+      // L'enlève après l'animation
+      setTimeout(() => avion.remove(), 2000);
+
+      poserQuestion(texte);
+      input.focus();
+    }
+
+    async function poserQuestion(texte) {
+      ajouterMessage('user', texte);
+      btn.disabled = true;
+
+      const idLoading = ajouterMessage('loading', '⏳ Je réfléchis...');
+
+      // On enlève les accents et on met en minuscules pour
+      // faciliter la comparaison du texte.
+      const question = texte.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+      const reponse = await traiterQuestion(question);
+
+      supprimerMessage(idLoading);
+      ajouterMessage('bot', reponse);
+
+      btn.disabled = false;
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    // ============================================================
+    // API FASTAPI
+    // Le chatbot communique avec le serveur FastAPI !
+    // ============================================================
+    const API_URL = '/api/chat';
+
+    async function traiterQuestion(texte) {
+      try {
+        const response = await fetch(API_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            texte: texte,
+            system_prompt: prompts[langueCourante]
+          })
+        });
+
+        if (!response.ok) {
+          return '❌ Erreur de connexion au serveur. Assure-toi que FastAPI est lancé ! 🚀';
+        }
+
+        const data = await response.json();
+        return data.message || 'Pas de réponse...';
+      } catch (error) {
+        return `❌ Erreur : ${error.message}<br>Assure-toi que le serveur FastAPI est lancé sur http://localhost:8000`;
+      }
+    }
+
+    // --- Helpers d'affichage (tu n'as normalement pas besoin d'y toucher) ---
+
+    function ajouterMessage(type, html) {
+      const id = `msg-${++idMsg}`;
+      const div = document.createElement('div');
+      div.className = `message ${type}`;
+      div.id = id;
+      div.innerHTML = html;
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+      return id;
+    }
+
+    function supprimerMessage(id) {
+      document.getElementById(id)?.remove();
+    }
+  </script>
+
+  </div>
+
+</body>
+</html>

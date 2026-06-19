@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nahman AI</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Arial, sans-serif;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-image:
+        url("bg-accueil2.png"),
+        url("bg-accueil3.png"),
+        url("bg-accueil.png"),
+        linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
+      background-position: 0% center, 50% center, 100% center, center;
+      background-size: 33.33% cover, 33.33% cover, 33.33% cover, cover;
+      background-attachment: fixed, fixed, fixed;
+      background-repeat: no-repeat, no-repeat, no-repeat;
+      background-blend-mode: overlay;
+    }
+
+    .container {
+      text-align: center;
+      padding: 2rem;
+    }
+
+    h1 {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, #ff005f 0%, #9400d3 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      opacity: 0.9;
+    }
+
+    .btn-accueil {
+      padding: 1rem 2rem;
+      background: linear-gradient(135deg, #ff0000 0%, #9400d3 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-accueil:hover {
+      opacity: 0.85;
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>SALUT ET BIENVENUE!!!!!!!!!!!!!</h1>
+    <p>Ici poses n'importe quelle question</p>
+    <a href="chat.html" class="btn-accueil">🚀 Commencer</a>
+  </div>
+</body>
+</html>
