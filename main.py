@@ -10,13 +10,17 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+_api_key = os.getenv("ANTHROPIC_API_KEY")
+if not _api_key:
+    raise RuntimeError("ANTHROPIC_API_KEY is not set. Add it to your environment variables.")
+
 app = FastAPI(
     title="Nahman AI",
     description="Un chatbot intelligent alimenté par Claude et FastAPI",
     version="1.0.0"
 )
 
-client = Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+client = Anthropic(api_key=_api_key)
 
 SYSTEM_PROMPT_PAR_DEFAUT = """Tu es un chatbot intelligent et utile.
 Tu peux aider avec n'importe quel sujet.
