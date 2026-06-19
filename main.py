@@ -5,6 +5,7 @@ from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from anthropic import Anthropic
 import os
+import traceback
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -53,8 +54,9 @@ def traiter_question(question: str, system_prompt: str | None = None) -> str:
             messages=[{"role": "user", "content": question}]
         )
         return message.content[0].text
-    except Exception:
-        return "Oups ! Une erreur s'est produite. Réessaie dans quelques instants. 😅"
+    except Exception as e:
+        traceback.print_exc()
+        return f"Oups ! Une erreur s'est produite : {e} 😅"
 
 
 # ── API routes (all under /api) ──────────────────────────────────────────────
